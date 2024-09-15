@@ -119,9 +119,19 @@
 
     <!-- Botón de música -->
     <button class="music-button" onclick="playMusic()">
-        Toca <span>AQUÍ</span> para reproducir música
-    </button>
-    <audio id="game-music" src="cancion/cancion.mp3"></audio>
+    Toca <span>AQUÍ</span> para reproducir música
+</button>
+ <iframe width="87" height="100" src="https://www.myinstants.com/instant/musica-epica/embed/" frameborder="0" scrolling="no"></iframe>
+<script>
+    function playMusic() {
+        var music = document.getElementById('game-music');
+        if (music.paused) {
+            music.play();
+        } else {
+            music.pause();
+        }
+    }
+</script>
 
     <!-- Personalización del personaje -->
     <div id="character-customization" class="character-customization">
@@ -229,11 +239,11 @@ function startQuiz() {
 }
 
 var questions = [
-    { question: '¿Cuál es la capital de Francia?', answers: ['París', 'Londres', 'Berlín'], correct: 0 },
+    { question: '¿Cuál es una función común de los chatbots?', answers: ['Hacer Llamadas Telefonicas', 'Responder Preguntas Y Proporcionar Información', 'Conducir Automoviles'], correct: 1 },
     { question: '¿Cuánt días tiene una semana?', answers: ['5', '7', '10'], correct: 1 },
     { question: '¿Cuál es el color del cielo en un día claro?', answers: ['Rojo', 'Azul', 'Verde'], correct: 1 },
-    { question: '¿Cuánt continentes hay en el mundo?', answers: ['5', '7', '6'], correct: 1 },
-    { question: '¿Cuál es el océano más grande?', answers: ['Atlántico', 'Índico', 'Pacífico'], correct: 2 },
+    { question: '¿Que significa la sigla IA?', answers: ['Interfaz Aumentada', 'Inteligencia Artificial', 'Información Aumentada'], correct: 1 },
+    { question: '¿Qué hace un asistente virtual como siri?', answers: ['Lava Ropa', 'Cocina Comida', 'Habla Contigo'], correct: 2 },
     { question: '¿Qué planeta es conocido como el "Planeta Rojo"?', answers: ['Venus', 'Marte', 'Mercurio'], correct: 1 }
 ];
 
@@ -293,16 +303,11 @@ function showResults() {
     document.getElementById('score').innerHTML = '<h3>Tu puntuación final es: ' + score + ' de ' + questions.length + '</h3>';
 
     // Mostrar confeti si todas las respuestas fueron correctas
+    
     if (score === questions.length) {
+        
         var confetti = document.createElement('div');
-        confetti.id = 'confetti';
-        confetti.style.width = '100%';
-        confetti.style.height = '100%';
-        confetti.style.position = 'fixed';
-        confetti.style.top = '0';
-        confetti.style.left = '0';
-        confetti.style.pointerEvents = 'none';
-        document.body.appendChild(confetti);
+        
         
         var confettiScript = document.createElement('script');
         confettiScript.src = 'https://www.wpromotions.eu/confetti.min.js';
@@ -314,6 +319,7 @@ function showResults() {
         };
         document.body.appendChild(confettiScript);
     }
+    
 }
 
 // Mostrar el botón solo para el desarrollador
@@ -321,4 +327,5 @@ var isDeveloper = false; // Cambia esto a false para esconder el botón a los ju
 if (!isDeveloper) {
     document.getElementById('developer-controls').classList.add('hidden');
 }
+    
 </script>
