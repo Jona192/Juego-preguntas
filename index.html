@@ -27,7 +27,7 @@
             font-family: 'Times New Roman', serif;
             color: #f0e6f6;
         }
-        .character-customization {
+        .character-customization, .name-entry, .quiz-section {
             display: none;
             margin-top: 40px;
             padding: 30px;
@@ -35,12 +35,12 @@
             border-radius: 15px;
             color: #333;
         }
-        label, select {
+        label, select, input {
             font-size: 18px;
             font-family: 'Verdana', sans-serif;
             color: #333;
         }
-        select {
+        select, input {
             padding: 10px;
             margin-top: 10px;
             width: 200px;
@@ -72,8 +72,39 @@
         .hidden {
             display: none;
         }
+        .timer {
+            font-size: 24px;
+            color: #0000ff; /* Azul */
+            margin-top: 20px;
+        }
+        .music-button {
+            background-color: #f0e6f6;
+            color: #4b0082;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .music-button a {
+            color: #ff0000; /* Rojo */
+        }
+        .music-button:hover {
+            background-color: #dcdcdc;
+        }
+        #confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="https://www.wpromotions.eu/confetti.min.js"></script>
 </head>
 <body>
 
@@ -83,8 +114,14 @@
 
     <!-- Código QR -->
     <div id="qr-code" class="qr-code">
-        <canvas id="qr"></canvas>
+        <canvas id="qr" width="250" height="250"></canvas>
     </div>
+
+    <!-- Botón de música -->
+    <button class="music-button" onclick="playMusic()">
+        Toca <span>AQUÍ</span> para reproducir música
+    </button>
+    <audio id="game-music" src="cancion/cancion.mp3"></audio>
 
     <!-- Personalización del personaje -->
     <div id="character-customization" class="character-customization">
@@ -110,18 +147,41 @@
 
         <!-- Vista previa del personaje -->
         <div class="character-preview">
-            <img id="warrior" src="https://via.placeholder.com/150/0000FF/808080?text=Guerrero" alt="Guerrero">
-            <img id="mage" src="https://via.placeholder.com/150/FF0000/FFFFFF?text=Mago" alt="Mago">
-            <img id="explorer" src="https://via.placeholder.com/150/008000/FFFFFF?text=Explorador" alt="Explorador">
+            <img id="warrior" src="https://www.canalgif.net/Gifs-animados/Armas/Guerreros/Imagen-animada-Guerrero-02.gif" alt="Guerrero">
+            <img id="mage" src="https://www.canalgif.net/Gifs-animados/Circo/Magos/Imagen-animada-Magia-45.gif" alt="Mago">
+            <img id="explorer" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgLTapVMe-n1d_ey5oQa6bwkchUC4xoJKjBdcQpCk7W1pxG2AUxn8yzDI8DPZW6GlVcyWhIoO5aWHrNR0-jWMu2Z32wdIjrRyM3c7dG90pDD4ebLsouYeo02aHU06A0bghHgiX1zF_rNifX/s350/nino+andando.gif" alt="Explorador">
         </div>
 
-        <button class="elegant-button">Guardar y Continuar</button>
+        <button class="elegant-button" onclick="showNameEntry()">Guardar y Continuar</button>
+    </div>
+
+    <!-- Entrada del nombre del jugador -->
+    <div id="name-entry" class="name-entry">
+        <h2>Ingresa tu nombre</h2>
+        <input type="text" id="player-name" placeholder="Tu nombre">
+        <button class="elegant-button" onclick="startQuiz()">Empezar Quiz</button>
+    </div>
+
+    <!-- Sección de preguntas -->
+    <div id="quiz-section" class="quiz-section">
+        <h2>Quiz</h2>
+        <div id="question"></div>
+        <div id="answers"></div>
+        <div class="timer" id="timer">16</div>
+    </div>
+
+    <!-- Sección de resultados -->
+    <div id="result-section" class="quiz-section hidden">
+        <div id="score"></div>
+        <div id="incorrect-questions"></div>
     </div>
 
     <!-- Botón para iniciar el juego (solo visible para el desarrollador) -->
     <div id="developer-controls" class="hidden">
         <button class="elegant-button" onclick="startGame()">Iniciar Juego (Desarrollador)</button>
     </div>
+
+    <div id="confetti"></div>
 </div>
 
 <script>
@@ -134,47 +194,131 @@
         foreground: '#4b0082'
     });
 
+    // Reproducir música
+    function playMusic() {
+        var music = document.getElementById('game-music');
+        if (music.paused) {
+            music.play();
+        } else {
+            music.pause();
+        }
+    }
+
     // Mostrar personalización del personaje y ocultar QR después de escanear
     setTimeout(function() {
         document.getElementById('qr-code').classList.add('hidden');
         document.getElementById('character-customization').style.display = 'block';
     }, 3000); // Espera 3 segundos antes de ocultar el QR
 
-    // Actualizar la vista previa del personaje al seleccionar
-    function updateCharacter() {
-        var character = document.getElementById('character').value;
-        document.getElementById('warrior').style.display = 'none';
-        document.getElementById('mage').style.display = 'none';
-        document.getElementById('explorer').style.display = 'none';
+    <!-- Mostrar entrada de nombre del jugador y ocultar personalización del personaje -->
+function showNameEntry() {
+    document.getElementById('character-customization').style.display = 'none';
+    document.getElementById('name-entry').style.display = 'block';
+}
 
-        if (character === 'character1') {
-            document.getElementById('warrior').style.display = 'block';
-        } else if (character === 'character2') {
-            document.getElementById('mage').style.display = 'block';
-        } else if (character === 'character3') {
-            document.getElementById('explorer').style.display = 'block';
+// Iniciar el cuestionario
+function startQuiz() {
+    var playerName = document.getElementById('player-name').value;
+    if (playerName) {
+        document.getElementById('name-entry').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        loadQuestion(0); // Cargar la primera pregunta
+    } else {
+        alert('Por favor, ingresa tu nombre.');
+    }
+}
+
+var questions = [
+    { question: '¿Cuál es la capital de Francia?', answers: ['París', 'Londres', 'Berlín'], correct: 0 },
+    { question: '¿Cuánt días tiene una semana?', answers: ['5', '7', '10'], correct: 1 },
+    { question: '¿Cuál es el color del cielo en un día claro?', answers: ['Rojo', 'Azul', 'Verde'], correct: 1 },
+    { question: '¿Cuánt continentes hay en el mundo?', answers: ['5', '7', '6'], correct: 1 },
+    { question: '¿Cuál es el océano más grande?', answers: ['Atlántico', 'Índico', 'Pacífico'], correct: 2 },
+    { question: '¿Qué planeta es conocido como el "Planeta Rojo"?', answers: ['Venus', 'Marte', 'Mercurio'], correct: 1 }
+];
+
+var currentQuestionIndex = 0;
+var timer;
+var timeLeft = 16; // Tiempo en segundos
+var score = 0; // Puntuación del jugador
+
+// Mostrar una pregunta y sus respuestas
+function loadQuestion(index) {
+    var questionData = questions[index];
+    if (!questionData) {
+        showResults();
+        return;
+    }
+
+    document.getElementById('question').innerHTML = '<h3>' + questionData.question + '</h3>';
+    var answersHtml = questionData.answers.map((answer, i) => 
+        '<button class="elegant-button" onclick="checkAnswer(' + i + ')">' + answer + '</button>'
+    ).join('');
+    document.getElementById('answers').innerHTML = answersHtml;
+
+    startTimer();
+}
+
+// Comprobar si la respuesta es correcta
+function checkAnswer(selected) {
+    var correct = questions[currentQuestionIndex].correct;
+    if (selected === correct) {
+        score++;
+    }
+    clearInterval(timer);
+    timeLeft = 16;
+    currentQuestionIndex++;
+    loadQuestion(currentQuestionIndex);
+}
+
+// Iniciar el temporizador
+function startTimer() {
+    document.getElementById('timer').innerText = timeLeft;
+    timer = setInterval(function() {
+        timeLeft--;
+        document.getElementById('timer').innerText = timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            alert('Tiempo agotado!');
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
         }
-    }
+    }, 1000);
+}
 
-    // Actualizar los accesorios del personaje al seleccionar
-    function updateAccessory() {
-        var accessory = document.getElementById('accessory').value;
-        // Lógica para mostrar los accesorios en el personaje seleccionado
-        console.log("Accesorio seleccionado: " + accessory);
-    }
+// Mostrar los resultados
+function showResults() {
+    document.getElementById('quiz-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    document.getElementById('score').innerHTML = '<h3>Tu puntuación final es: ' + score + ' de ' + questions.length + '</h3>';
 
-    // Iniciar juego y mostrar el botón
-    function startGame() {
-        alert('¡El juego ha comenzado!');
-        // Aquí deberías iniciar el juego y mostrar el temporizador de 16 segundos
+    // Mostrar confeti si todas las respuestas fueron correctas
+    if (score === questions.length) {
+        var confetti = document.createElement('div');
+        confetti.id = 'confetti';
+        confetti.style.width = '100%';
+        confetti.style.height = '100%';
+        confetti.style.position = 'fixed';
+        confetti.style.top = '0';
+        confetti.style.left = '0';
+        confetti.style.pointerEvents = 'none';
+        document.body.appendChild(confetti);
+        
+        var confettiScript = document.createElement('script');
+        confettiScript.src = 'https://www.wpromotions.eu/confetti.min.js';
+        confettiScript.onload = function() {
+            var confettiSettings = { target: confetti };
+            var confettiInstance = new ConfettiGenerator(confettiSettings);
+            confettiInstance.render();
+            setTimeout(function() { confettiInstance.clear(); }, 90000);
+        };
+        document.body.appendChild(confettiScript);
     }
+}
 
-    // Mostrar el botón solo para el desarrollador
-    var isDeveloper = true; // Cambia esto a false para esconder el botón a los jugadores
-    if (!isDeveloper) {
-        document.getElementById('developer-controls').classList.add('hidden');
-    }
+// Mostrar el botón solo para el desarrollador
+var isDeveloper = false; // Cambia esto a false para esconder el botón a los jugadores
+if (!isDeveloper) {
+    document.getElementById('developer-controls').classList.add('hidden');
+}
 </script>
-
-</body>
-</html>
