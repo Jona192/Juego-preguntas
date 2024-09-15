@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Preguntas</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #4b0082; /* Fondo morado */
+            color: white;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+        }
+        .container {
+            padding: 50px;
+        }
+        .qr-code {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        h1, h2 {
+            font-family: 'Times New Roman', serif;
+            color: #f0e6f6;
+        }
+        .character-customization {
+            display: none;
+            margin-top: 40px;
+            padding: 30px;
+            background-color: #f0e6f6;
+            border-radius: 15px;
+            color: #333;
+        }
+        label, select {
+            font-size: 18px;
+            font-family: 'Verdana', sans-serif;
+            color: #333;
+        }
+        select {
+            padding: 10px;
+            margin-top: 10px;
+            width: 200px;
+        }
+        .elegant-button {
+            background-color: #8a2be2;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .elegant-button:hover {
+            background-color: #6a1bb9;
+        }
+        .customization-options {
+            margin: 20px 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Bienvenidos al Juego de Preguntas</h1>
+    <p>Escanea el código QR para unirte al juego y personalizar tu personaje.</p>
+
+    <!-- Código QR -->
+    <div class="qr-code">
+        <canvas id="qr"></canvas>
+    </div>
+
+    <!-- Personalización del personaje -->
+    <div id="character-customization" class="character-customization">
+        <h2>Personalización del Personaje</h2>
+        <p>Selecciona un personaje y personaliza sus accesorios:</p>
+        <div class="customization-options">
+            <label for="character">Elige tu personaje:</label><br>
+            <select id="character">
+                <option value="character1">Guerrero</option>
+                <option value="character2">Mago</option>
+                <option value="character3">Explorador</option>
+            </select>
+        </div>
+        <div class="customization-options">
+            <label for="accessory">Elige un accesorio:</label><br>
+            <select id="accessory">
+                <option value="hat">Sombrero de Aventura</option>
+                <option value="glasses">Gafas Místicas</option>
+                <option value="scarf">Bufanda Encantada</option>
+            </select>
+        </div>
+        <button class="elegant-button">Guardar y Continuar</button>
+    </div>
+
+    <!-- Botón para iniciar el juego (solo visible para el desarrollador) -->
+    <div id="developer-controls">
+        <button class="elegant-button" onclick="startGame()">Iniciar Juego (Desarrollador)</button>
+    </div>
+</div>
+
+<script>
+    // Generar QR Code personalizado
+    var qr = new QRious({
+        element: document.getElementById('qr'),
+        value: 'https://tu-juego.com/unirse', // URL personalizada del juego
+        size: 250,
+        background: '#ffffff',
+        foreground: '#4b0082'
+    });
+
+    // Ocultar botón para los jugadores (esto debe ser ajustado en producción)
+    var developerControls = document.getElementById('developer-controls');
+    var isDeveloper = false; // Cambia esto a false para esconder el botón a los jugadores
+
+    if (!isDeveloper) {
+        developerControls.classList.add('hidden');
+    }
+
+    // Iniciar juego y mostrar personalización de personajes
+    function startGame() {
+        document.getElementById('character-customization').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
