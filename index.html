@@ -61,6 +61,17 @@
         .customization-options {
             margin: 20px 0;
         }
+        .character-preview {
+            margin-top: 20px;
+        }
+        .character-preview img {
+            width: 150px;
+            height: 150px;
+            display: none;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
 </head>
@@ -71,7 +82,7 @@
     <p>Escanea el código QR para unirte al juego y personalizar tu personaje.</p>
 
     <!-- Código QR -->
-    <div class="qr-code">
+    <div id="qr-code" class="qr-code">
         <canvas id="qr"></canvas>
     </div>
 
@@ -81,7 +92,7 @@
         <p>Selecciona un personaje y personaliza sus accesorios:</p>
         <div class="customization-options">
             <label for="character">Elige tu personaje:</label><br>
-            <select id="character">
+            <select id="character" onchange="updateCharacter()">
                 <option value="character1">Guerrero</option>
                 <option value="character2">Mago</option>
                 <option value="character3">Explorador</option>
@@ -89,17 +100,26 @@
         </div>
         <div class="customization-options">
             <label for="accessory">Elige un accesorio:</label><br>
-            <select id="accessory">
-                <option value="hat">Sombrero de Aventura</option>
-                <option value="glasses">Gafas Místicas</option>
-                <option value="scarf">Bufanda Encantada</option>
+            <select id="accessory" onchange="updateAccessory()">
+                <option value="none">Ninguno</option>
+                <option value="hat">Sombrero</option>
+                <option value="glasses">Gafas</option>
+                <option value="scarf">Bufanda</option>
             </select>
         </div>
+
+        <!-- Vista previa del personaje -->
+        <div class="character-preview">
+            <img id="warrior" src="https://via.placeholder.com/150/0000FF/808080?text=Guerrero" alt="Guerrero">
+            <img id="mage" src="https://via.placeholder.com/150/FF0000/FFFFFF?text=Mago" alt="Mago">
+            <img id="explorer" src="https://via.placeholder.com/150/008000/FFFFFF?text=Explorador" alt="Explorador">
+        </div>
+
         <button class="elegant-button">Guardar y Continuar</button>
     </div>
 
     <!-- Botón para iniciar el juego (solo visible para el desarrollador) -->
-    <div id="developer-controls">
+    <div id="developer-controls" class="hidden">
         <button class="elegant-button" onclick="startGame()">Iniciar Juego (Desarrollador)</button>
     </div>
 </div>
@@ -108,23 +128,51 @@
     // Generar QR Code personalizado
     var qr = new QRious({
         element: document.getElementById('qr'),
-        value: 'https://tu-juego.com/unirse', // URL personalizada del juego
+        value: 'https://jona192.github.io/Juego-preguntas/', // URL generada por GitHub Pages
         size: 250,
         background: '#ffffff',
         foreground: '#4b0082'
     });
 
-    // Ocultar botón para los jugadores (esto debe ser ajustado en producción)
-    var developerControls = document.getElementById('developer-controls');
-    var isDeveloper = false; // Cambia esto a false para esconder el botón a los jugadores
+    // Mostrar personalización del personaje y ocultar QR después de escanear
+    setTimeout(function() {
+        document.getElementById('qr-code').classList.add('hidden');
+        document.getElementById('character-customization').style.display = 'block';
+    }, 3000); // Espera 3 segundos antes de ocultar el QR
 
-    if (!isDeveloper) {
-        developerControls.classList.add('hidden');
+    // Actualizar la vista previa del personaje al seleccionar
+    function updateCharacter() {
+        var character = document.getElementById('character').value;
+        document.getElementById('warrior').style.display = 'none';
+        document.getElementById('mage').style.display = 'none';
+        document.getElementById('explorer').style.display = 'none';
+
+        if (character === 'character1') {
+            document.getElementById('warrior').style.display = 'block';
+        } else if (character === 'character2') {
+            document.getElementById('mage').style.display = 'block';
+        } else if (character === 'character3') {
+            document.getElementById('explorer').style.display = 'block';
+        }
     }
 
-    // Iniciar juego y mostrar personalización de personajes
+    // Actualizar los accesorios del personaje al seleccionar
+    function updateAccessory() {
+        var accessory = document.getElementById('accessory').value;
+        // Lógica para mostrar los accesorios en el personaje seleccionado
+        console.log("Accesorio seleccionado: " + accessory);
+    }
+
+    // Iniciar juego y mostrar el botón
     function startGame() {
-        document.getElementById('character-customization').style.display = 'block';
+        alert('¡El juego ha comenzado!');
+        // Aquí deberías iniciar el juego y mostrar el temporizador de 16 segundos
+    }
+
+    // Mostrar el botón solo para el desarrollador
+    var isDeveloper = true; // Cambia esto a false para esconder el botón a los jugadores
+    if (!isDeveloper) {
+        document.getElementById('developer-controls').classList.add('hidden');
     }
 </script>
 
